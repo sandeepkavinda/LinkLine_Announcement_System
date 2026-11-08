@@ -64,7 +64,7 @@ public final class DevicesPage extends Page {
                             e.state().isUsable() ? null : Theme.TEXT_FAINT, null);
                 case 2:
                     return new Tables.IconText(Ui.dot(e.state().isUsable() ? Theme.SUCCESS : Theme.DANGER, 16),
-                            e.state().label(), e.state().isUsable() ? null : Theme.DANGER, null);
+                            e.state().label(), e.state().isUsable() ? Theme.SUCCESS : Theme.DANGER, null);
                 default:
                     return e.isDefault() ? "Default device" : "";
             }

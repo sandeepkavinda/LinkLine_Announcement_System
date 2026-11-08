@@ -105,7 +105,8 @@ public final class HistoryPage extends Page {
                     return h.trigger().toString();
                 case 5:
                     return new Tables.IconText(StatusStyle.marker(h.status(), 20), h.status().label(),
-                            h.status() == PlayStatus.FAILED ? Theme.DANGER : null, null);
+                            h.status() == PlayStatus.FAILED ? Theme.DANGER
+                            : h.status() == PlayStatus.COMPLETED ? Theme.SUCCESS : null, null);
                 default:
                     return h.message();
             }

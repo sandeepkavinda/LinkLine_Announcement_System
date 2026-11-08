@@ -53,6 +53,7 @@ public final class MainFrame extends JFrame {
     private final JLabel pageSubtitle = Ui.muted("");
     private final JLabel clock = Ui.label("", 13f, Theme.TEXT, Font.BOLD);
     private final JLabel date = Ui.muted("");
+    private final JButton stopButton = Ui.button("Stop announcement", Glyph.STOP, Ui.Kind.DANGER);
     private final JLabel headerStatus = Ui.label("", 12.5f, Theme.TEXT_MUTED, Font.PLAIN);
     private final JLabel sidebarStatus = Ui.label("", 12f, Theme.TEXT_MUTED, Font.PLAIN);
     private final Timer ticker = new Timer(1000, e -> tick());
@@ -114,13 +115,13 @@ public final class MainFrame extends JFrame {
         side.setLayout(new BoxLayout(side, BoxLayout.Y_AXIS));
         side.setBorder(javax.swing.BorderFactory.createCompoundBorder(
                 javax.swing.BorderFactory.createMatteBorder(0, 0, 0, 1, Theme.BORDER_SOFT), Ui.pad(18, 14, 14, 14)));
-        side.setPreferredSize(new Dimension(248, 100));
+        side.setPreferredSize(new Dimension(264, 100));
 
         JPanel brand = Ui.transparent(new BorderLayout(12, 0));
         JLabel logo = new JLabel(new ImageIcon(AppIcon.image(40)));
         JPanel names = Ui.transparent(new java.awt.GridLayout(2, 1, 0, 0));
-        names.add(Ui.label(AppInfo.SHORT_NAME, 17f, Theme.TEXT, Font.BOLD));
-        names.add(Ui.label(AppInfo.NAME, 11f, Theme.TEXT_MUTED, Font.PLAIN));
+        names.add(Ui.label(AppInfo.COMPANY, 14.5f, Theme.TEXT, Font.BOLD));
+        names.add(Ui.label(AppInfo.SHORT_NAME + " · " + AppInfo.PRODUCT, 11f, Theme.TEXT_MUTED, Font.PLAIN));
         brand.add(logo, BorderLayout.WEST);
         brand.add(names, BorderLayout.CENTER);
         brand.setAlignmentX(0f);
@@ -171,6 +172,13 @@ public final class MainFrame extends JFrame {
         when.add(clock);
         when.add(date);
 
+        stopButton.setToolTipText("Stop the announcement that is playing now");
+        stopButton.setVisible(false);
+        stopButton.addActionListener(e -> {
+            Async.run(ctx.announcements::stopCurrent);
+            Toast.info(this, "Stopping the announcement…");
+        });
+
         JButton test = Ui.button("Test", Glyph.PLAY, Ui.Kind.GHOST);
         test.setToolTipText("Play a test announcement through the announcement output");
         test.addActionListener(e -> {
@@ -188,6 +196,7 @@ public final class MainFrame extends JFrame {
         admin.setIconTextGap(8);
 
         right.add(headerStatus);
+        right.add(stopButton);
         right.add(test);
         right.add(when);
         right.add(admin);
@@ -245,6 +254,7 @@ public final class MainFrame extends JFrame {
         Health h = health();
         pulse = !pulse;
         boolean playing = ctx.announcements.isPlaying();
+        stopButton.setVisible(playing);
         Color dot = playing && pulse ? Theme.alpha(h.color(), 120) : h.color();
         headerStatus.setIcon(playing ? Icons.of(Glyph.WAVE, 18, dot) : Ui.dot(dot, 18));
         headerStatus.setIconTextGap(8);

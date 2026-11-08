@@ -17,7 +17,7 @@ if /i "%1"=="installer" (
 )
 
 jpackage --type %TYPE% --name FAM --app-version 1.0.0 ^
-  --description "Factory Announcement Manager" --vendor "Linkline" ^
+  --description "Link Line Embroidery FAM" --vendor "Link Line Embroidery" ^
   --input target\jpackage-input --main-jar FAM-app.jar --main-class com.linkline.fam.FAM ^
   --java-options "-Dfile.encoding=UTF-8" --dest dist %EXTRA% || exit /b 1
 echo.

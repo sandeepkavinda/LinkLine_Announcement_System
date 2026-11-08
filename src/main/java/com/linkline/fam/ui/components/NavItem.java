@@ -86,10 +86,21 @@ public final class NavItem extends JComponent {
         }
         Color fg = selected ? Theme.TEXT : blend(Theme.TEXT_MUTED, Theme.TEXT, hover);
         Icons.paint(g2, glyph, 16, (h - 20) / 2.0, 20, selected ? Theme.ACCENT : fg, 1.8f);
-        g2.setFont(Theme.font(13.5f, selected ? java.awt.Font.BOLD : java.awt.Font.PLAIN));
+        // Same weight whether selected or not, so the text never grows and gets cut off.
+        g2.setFont(Theme.font(13.5f, java.awt.Font.PLAIN));
         g2.setColor(fg);
         FontMetrics fm = g2.getFontMetrics();
-        g2.drawString(label, 48, (h - fm.getHeight()) / 2 + fm.getAscent());
+        int textX = 46;
+        int room = w - textX - 12;
+        String shown = label;
+        if (fm.stringWidth(shown) > room) {
+            while (shown.length() > 1 && fm.stringWidth(shown + "…") > room) {
+                shown = shown.substring(0, shown.length() - 1);
+            }
+            shown = shown.stripTrailing() + "…";
+            setToolTipText(label);
+        }
+        g2.drawString(shown, textX, (h - fm.getHeight()) / 2 + fm.getAscent());
         g2.dispose();
     }
 

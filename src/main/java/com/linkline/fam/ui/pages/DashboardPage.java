@@ -130,6 +130,7 @@ public final class DashboardPage extends Page {
     private final JLabel countdownCaption = Ui.muted("starts in");
     private final JLabel nextAudio = Ui.label("", 13f, Theme.TEXT, Font.PLAIN);
     private final JLabel nextDevice = Ui.label("", 13f, Theme.TEXT, Font.PLAIN);
+    private final JButton stopButton = Ui.button("Stop announcement", Glyph.STOP, Ui.Kind.DANGER);
     private final JPanel nextDetails = Ui.transparent(new GridLayout(0, 1, 0, 8));
 
     private final StatusRow schedulerRow = new StatusRow("Scheduler");
@@ -234,8 +235,15 @@ public final class DashboardPage extends Page {
 
         JButton test = Ui.button("Test announcement", Glyph.PLAY, Ui.Kind.SECONDARY);
         test.addActionListener(e -> testAnnouncement());
-        JPanel foot = Ui.transparent(new BorderLayout());
-        foot.add(test, BorderLayout.WEST);
+        stopButton.setVisible(false);
+        stopButton.addActionListener(e -> {
+            Async.run(ctx.announcements::stopCurrent);
+            Toast.info(this, "Stopping the announcement…");
+        });
+        JPanel foot = Ui.transparent(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+        foot.add(test);
+        foot.add(Ui.hgap(8));
+        foot.add(stopButton);
 
         JPanel body = Ui.transparent(new BorderLayout(0, 16));
         body.add(top, BorderLayout.NORTH);
@@ -411,6 +419,7 @@ public final class DashboardPage extends Page {
     private void tick() {
         // countdown or "now playing"
         Optional<AnnouncementService.Job> job = ctx.announcements.currentJob();
+        stopButton.setVisible(job.isPresent());
         if (job.isPresent()) {
             nextCaption.setText("NOW PLAYING");
             nextCaption.setForeground(Theme.ACCENT);
